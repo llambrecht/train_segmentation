@@ -23,10 +23,16 @@ Les images sont 48x48. On va créer des patchs 8x8 de cette façon  :
 
 	Algo :
 
+	Arg : nbPatch, le nombre de patch total
 	Macro : nbImg, le nombre d'images
 					taillePatch, la taille des patchs
+					tailleImg, la taille des images
 
-	nbPatch -> le nombre de patch total
+	si(taillePatch < 5) error
+	si(taillePatch > tailleImg/2) error
+	si(taillePatch%2 != 1) taillePatch--; // pour pouvoir random pile au centre
+
+
 	si nbPatch%nbImg != 0, nbPatch += nbPatch%nbImg;
 
 	nbPatchPerImg = nbPatch/nbImg;
@@ -36,11 +42,30 @@ Les images sont 48x48. On va créer des patchs 8x8 de cette façon  :
 	tant que nbCurrImg < nbImg{
 		i <- 0;
 		tant que i < nbPatchPerImg {
-			createPatch(nu_im_i.jpg, nu_im_patch_i.jpg);
-			createPatch(gt_im_i.gif, gt_im_patch_i.gif)
+			createPatch(nu_im_i.jpg, nu_im_patch_i.jpg, taillePatch, tailleImg);
+			createPatch(gt_im_i.gif, gt_im_patch_i.gif, taillePatch, tailleImg)
 		}
 	}
 
+
+	Avec :
+
+	createPatch(source, dest, taillePatch, tailleImg){
+		rdm_i <- un random entre 0 + taillePatch et tailleImg - taillePatch
+		rdm_j <- un random entre 0 + taillePatch et tailleImg - taillePatch
+		patch[taillePatch][taillePatch];
+		i <- 0;
+		j <- 0;
+		ip <- 0;
+		jp <- 0;
+		pour j de rdm_j-taillePatch/2 à rdm_j+taillePatch/2
+			pour i de rdm_i-taillePatch/2 à rdm_i+taillePatch/2
+				patch[ip][jp] = source[i][j];
+				ip++
+				jp++
+
+
+	}
 
 
 ///////////////////////////////////////////////
