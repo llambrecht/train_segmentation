@@ -3,18 +3,43 @@ MAKING PATCH
 //////////////////////////////////////////////////
 
 On a des images ppm de la base DRIVE.
-	-Des images de rétine "images nues"
-	-Des images segmentés "vérité terrain"
+	-Des images de rétine "images nues" nu_im en format jpg
+	-Des images segmentés "vérité terrain" gt_im en format gif
 
 Les images sont 48x48. On va créer des patchs 8x8 de cette façon  :
 	-On prend aléatoirement un pixel de l'image qui sera le centre d'un patch
 		-On crée un "patch nu"
 		-On prend le même centre dans les images de vérité terrain et on crée un
 		 patch de la même façon
-		 		-on exporte les résultats en fichiers "nu_im" et "gt_im" pour nues et
-				 ground truth
+		 		-on exporte les résultats en fichiers "nu_im_patch_i" et "gt_im_patch_i"
+				pour nues et ground truth
 
 	-Mettre les images nues en noir et blanc ?
+
+
+
+	-On prend en argument de patch_making le nombre total de patch nbpatch que
+	l'on veut. On a 20 images, donc il faut que nbpatch soit un multiple de 20
+
+	Algo :
+
+	Macro : nbImg, le nombre d'images
+					taillePatch, la taille des patchs
+
+	nbPatch -> le nombre de patch total
+	si nbPatch%nbImg != 0, nbPatch += nbPatch%nbImg;
+
+	nbPatchPerImg = nbPatch/nbImg;
+
+	i <- 0;
+	nbCurrImg <- 0;
+	tant que nbCurrImg < nbImg{
+		i <- 0;
+		tant que i < nbPatchPerImg {
+			createPatch(nu_im_i.jpg, nu_im_patch_i.jpg);
+			createPatch(gt_im_i.gif, gt_im_patch_i.gif)
+		}
+	}
 
 
 
