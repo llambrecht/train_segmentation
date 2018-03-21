@@ -1,0 +1,46 @@
+//////////////////////////////////////////////////
+MAKING PATCH
+//////////////////////////////////////////////////
+
+On a des images ppm de la base DRIVE.
+	-Des images de rétine "images nues"
+	-Des images segmentés "vérité terrain"
+
+Les images sont 48x48. On va créer des patchs 8x8 de cette façon  :
+	-On prend aléatoirement un pixel de l'image qui sera le centre d'un patch
+		-On crée un "patch nu"
+		-On prend le même centre dans les images de vérité terrain et on crée un
+		 patch de la même façon
+		 		-on exporte les résultats en fichiers "nu_im" et "gt_im" pour nues et
+				 ground truth
+
+	-Mettre les images nues en noir et blanc ?
+
+
+
+///////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////
+Questions à poser :
+-Pour les patchs : quelle taille ? parce que les images sont 48 x 48 et si on
+fait des patchs 8x8 on risque de pas avoir beaucoup de pixels (voir aucuns ?)
+qui correspondent à des pixels de vaisseau sanguins. De plus ensuite, si on veut
+faire de l'apprentissage sur l'orientation...
+
+-Dans la base DRIVE, il y a deux vérités terrain de deux observants, comment
+exploiter ça ?
+
+-Au final on apprend sur les patch mais on test sur les images entières ?
