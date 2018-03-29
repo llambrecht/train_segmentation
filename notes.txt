@@ -6,7 +6,7 @@ On a des images ppm de la base DRIVE.
 	-Des images de rétine "images nues" nu_im en format jpg
 	-Des images segmentés "vérité terrain" gt_im en format gif
 
-Les images sont 48x48. On va créer des patchs 8x8 de cette façon  :
+Les images sont 584x565. On va créer des patchs 48*48 de cette façon  :
 	-On prend aléatoirement un pixel de l'image qui sera le centre d'un patch
 		-On crée un "patch nu"
 		-On prend le même centre dans les images de vérité terrain et on crée un
@@ -74,6 +74,19 @@ Les images sont 48x48. On va créer des patchs 8x8 de cette façon  :
 
 
 
+Augmenter les données : faire des rotations (enregistrer parce que ça prend du temps) -> scipi rotation
+	-> faire des patchs sur les images rotatées.
+	-> pas besoin d'enregistrer les patchs
+
+
+deux vérités terrain
+algorithme de consensus : staple
+	intersection ou union des deux
+	
+Gt = np.zeros(h,w,3)
+Gt[:,:,0] = (mask==0).astype(int)
+	   ,1] = (imggt==0)
+	   ,2] = (imggt==1)
 
 
 
@@ -83,14 +96,6 @@ Les images sont 48x48. On va créer des patchs 8x8 de cette façon  :
 
 
 
-//////////////////////////////////////////////////
-Questions à poser :
--Pour les patchs : quelle taille ? parce que les images sont 48 x 48 et si on
-fait des patchs 8x8 on risque de pas avoir beaucoup de pixels (voir aucuns ?)
-qui correspondent à des pixels de vaisseau sanguins. De plus ensuite, si on veut
-faire de l'apprentissage sur l'orientation...
 
--Dans la base DRIVE, il y a deux vérités terrain de deux observants, comment
-exploiter ça ?
 
--Au final on apprend sur les patch mais on test sur les images entières ?
+
