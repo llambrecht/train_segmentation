@@ -59,6 +59,26 @@ print nbPatchsPerImage
 
 #--------- fin args vars
 
+
+#--------- Rotation des images et enregistrement
+
+i = 0
+
+#while (i < nbImg):
+	
+	
+
+#--------- fin rotation des images et enregistrement
+
+
+#--------- Création des patchs
+
+
+#--------- fin création des patchs
+
+
+
+
 imageName = "01_test.tif"
 im = Image.open(nu_imgs_test_path + imageName)
 im.show()
