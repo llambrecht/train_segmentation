@@ -1,0 +1,4 @@
+rotate images : done
+
+create patch from rotated image 
+
