@@ -1,4 +1,5 @@
 rotate images : done
 
-create patch from rotated image 
+create patch from rotated image : done
 
+create test data : todo
