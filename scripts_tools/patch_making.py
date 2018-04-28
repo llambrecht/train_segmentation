@@ -3,6 +3,8 @@
 import numpy as np
 import os, sys
 
+from sklearn.feature_extraction import image
+
 from scipy.ndimage import rotate
 import scipy.misc
 from matplotlib import pyplot as plt
@@ -10,7 +12,7 @@ import matplotlib.image as mpimg
 import random
 
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 #--------- Macros
@@ -41,9 +43,18 @@ mask_img_test = "../DRIVE/test/mask/"
 
 #created sets
 dataset_path = "../DRIVE_datasets_training_testing/"
-rotated_original_path = dataset_path + "rotated_original/"
-rotated_gt_path = dataset_path + "rotated_gt/"
+rotated_original_path = dataset_path + "/train/rotated_original/"
+rotated_gt_path = dataset_path + "/train/rotated_gt/"
 
+#rotated image paths train
+rotated_nu_path = "../DRIVE_datasets_training_testing/train/rotated_original/"
+rotated_gt_path = "../DRIVE_datasets_training_testing/train/rotated_gt/"
+patch_nu_path = "../DRIVE_datasets_training_testing/train/patchs_original/"
+patch_gt_path = "../DRIVE_datasets_training_testing/train/patchs_gt/"
+
+#test images path
+patch_nu_path_test = "../DRIVE_datasets_training_testing/test/patchs_original/"
+patch_gt_path_test = "../DRIVE_datasets_training_testing/test/patchs_gt/"
 
 #creation des répertoires
 if not os.path.exists(rotated_original_path):
@@ -51,6 +62,18 @@ if not os.path.exists(rotated_original_path):
 
 if not os.path.exists(rotated_gt_path):
 	os.makedirs(rotated_gt_path)
+
+if not os.path.exists(patch_nu_path):
+	os.makedirs(patch_nu_path)
+
+if not os.path.exists(patch_gt_path):
+	os.makedirs(patch_gt_path)
+
+if not os.path.exists(patch_nu_path_test):
+	os.makedirs(patch_nu_path_test)
+
+if not os.path.exists(patch_gt_path_test):
+	os.makedirs(patch_gt_path_test)
 
 
 
@@ -117,23 +140,42 @@ for path, subdirs, files in os.walk(nu_imgs_train_path):
 			open(rotated_original_path + "rotOriginal" + str(i) +"_rot"+str(j) + ".tif", 'a').close()
 			scipy.misc.imsave(rotated_original_path + "rotOriginal" + str(i) +"_rot"+str(j) + ".tif", rotOriginal)
 
-			open(rotated_gt_path + "rotGt" + str(i) +"_rot"+str(j) + ".tif", 'a').close()
+			open(rotated_gt_path + "rotGt" + str(i) +"_rot"+str(j) + ".gif", 'a').close()
 			scipy.misc.imsave(rotated_gt_path + "rotGt" + str(i) +"_rot"+str(j) + ".gif", rotGt)
 
+#--------- Création des patchs et enregistrement
+
+#patch des images originales
+for path, subdirs, files in os.walk(rotated_nu_path):
+	for i in range(len(files)):
+		imgOriginal = Image.open(rotated_nu_path + files[i])
+
+			#mise en niveau de gris
+		imgGris = ImageOps.grayscale(imgOriginal)
+
+		arrayOriginal = np.asarray(imgGris)
 
 
+		patches = image.extract_patches_2d(arrayOriginal, (48,48), 5)
+		#mise en niveau de gris
+		for j in range(len(patches)):
+			open(patch_nu_path + "patch_nu_" +str(i) + "_" + str(j) + ".tif", 'a').close()
+			scipy.misc.imsave(patch_nu_path + "patch_nu_" +str(i) + "_" + str(j) + ".tif", patches[j])
 
-
-
+#patch des ground truth
+for path,subdirs,files in os.walk(rotated_gt_path):
+	for i in range(len(files)):
+		imgGt = Image.open(rotated_gt_path + files[i])
+		arrayGt = np.asarray(imgGt)
+		patches = image.extract_patches_2d(arrayGt , (48,48), 5)
+		for j in range(len(patches)):
+			open(patch_gt_path + "patch_gt_" + str(i) + "_" + str(j) + ".gif", 'a').close()
+			scipy.misc.imsave(patch_gt_path + "patch_gt_" + str(i) + "_" + str(j) + ".gif", patches[j])
 
 
 #--------- fin rotation des images et enregistrement
 
 
-#--------- Création des patchs
-
-
-#--------- fin création des patchs
 """
 imageName = "01_test.tif"
 im = Image.open(nu_imgs_test_path + imageName)
