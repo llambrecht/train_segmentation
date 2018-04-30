@@ -25,6 +25,8 @@ nbPatchs = 50
 nbPatchsPerImage = 0
 channels = 3
 
+nbPatchsTest = 5
+
 usage = "Usage : ./patch_making [nbPatchs]"
 
 #--------- Paths
@@ -154,8 +156,6 @@ for path, subdirs, files in os.walk(rotated_nu_path):
 		imgGris = ImageOps.grayscale(imgOriginal)
 
 		arrayOriginal = np.asarray(imgGris)
-
-
 		patches = image.extract_patches_2d(arrayOriginal, (48,48), 5)
 		#mise en niveau de gris
 		for j in range(len(patches)):
@@ -175,6 +175,34 @@ for path,subdirs,files in os.walk(rotated_gt_path):
 
 #--------- fin rotation des images et enregistrement
 
+
+#--------- création des patchs de test
+
+
+for path, subdirs, files in os.walk(nu_imgs_test_path):
+	for i in range(len(files)):
+		imgOriginal = Image.open(nu_imgs_test_path + files[i])
+
+		imgGris = ImageOps.grayscale(imgOriginal)
+
+		arrayOriginal = np.asarray(imgGris)
+
+		patches = image.extract_patches_2d(arrayOriginal,(48,48),5)
+
+		for j in range(len(patches)):
+			open(patch_nu_path_test + "patch_nu_" + str(i) + "_" + str(j) + ".tif", 'a').close()
+			scipy.misc.imsave(patch_nu_path_test + "patch_nu_" + str(j) +"_"+str(j) +".tif" , patches[j])
+
+
+
+for path, subdirs, files in os.walk(GT_imgs_test_path):
+	for i in range(len(files)):
+		imgGt = Image.open(GT_imgs_test_path + files[i])
+		arrayGt = np.asarray(imgGt)
+		patches = image.extract_patches_2d(arrayGt,(48,48), 5)
+		for j in range(len(patches)):
+			open(patch_gt_path_test	+ "patch_gt_" + str(i) + "_" + str(j) + ".gif", 'a').close()
+			scipy.misc.imsave(patch_gt_path_test + "patch_gt_" + str(i) +"_"+ str(j) + ".gif", patches[j])
 
 """
 imageName = "01_test.tif"
