@@ -2,5 +2,5 @@ DRIVE
 DRIVE_datasets_training_testing
 trash
 src/weights.h5
-imgs_gt_train.npy
-imgs_train.npy
+*.npy
+preds/
