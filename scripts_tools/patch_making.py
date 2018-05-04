@@ -190,8 +190,7 @@ for path, subdirs, files in os.walk(nu_imgs_test_path):
 		patches = image.extract_patches_2d(arrayOriginal,(48,48),5)
 
 		for j in range(len(patches)):
-			open(patch_nu_path_test + "patch_nu_" + str(i) + "_" + str(j) + ".tif", 'a').close()
-			scipy.misc.imsave(patch_nu_path_test + "patch_nu_" + str(j) +"_"+str(j) +".tif" , patches[j])
+			scipy.misc.imsave(patch_nu_path_test + "patch_nu_" + str(i) +"_"+str(j) +".tif" , patches[j])
 
 
 
