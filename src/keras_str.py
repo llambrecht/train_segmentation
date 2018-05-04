@@ -14,7 +14,7 @@ import numpy as np
 from keras import backend as K
 
 
-from data_loader import DataCreator, DataLoader
+from data_loader import DataCreator, DataLoader, load_test_data
 
 #paths
 patch_nu_path = "../DRIVE_datasets_training_testing/patchs_original/"
