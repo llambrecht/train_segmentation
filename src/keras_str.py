@@ -6,6 +6,7 @@ from keras.optimizers import SGD, Adam
 from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, Conv2DTranspose
 from keras.callbacks import ModelCheckpoint
 
+from PIL import Image
 
 from skimage.transform import resize
 from skimage.io import imsave
@@ -24,9 +25,9 @@ K.set_image_data_format('channels_last')  # TF dimension ordering in this code
 
 
 #macros
-totalImgs = 300
+totalImgs = 1200
 sizeOfBatch = 30
-numberOfEpochs = 3
+numberOfEpochs = 10
 img_rows = 48
 img_cols = 48
 smooth = 1.
@@ -126,7 +127,7 @@ def train_and_predict():
     print('-'*30)
     print('Fitting model...')
     print('-'*30)
-    model.fit(imgs_train, imgs_mask_train, batch_size=30, nb_epoch=numberOfEpochs, verbose=1, shuffle=True,
+    model.fit(imgs_train, imgs_mask_train, batch_size=32, nb_epoch=numberOfEpochs, verbose=1, shuffle=True,
               validation_split=0.2,
               callbacks=[model_checkpoint])
 
@@ -158,9 +159,12 @@ def train_and_predict():
     pred_dir = 'preds'
     if not os.path.exists(pred_dir):
         os.mkdir(pred_dir)
-    for image, image_id in zip(imgs_mask_test, imgs_id_test):
+    #for image, image_id in zip(imgs_mask_test, imgs_id_test):
+    i=0
+    for image in imgs_mask_test:
         image = (image[:, :, 0] * 255.).astype(np.uint8)
-        imsave(os.path.join(pred_dir, str(image_id) + '_pred.png'), image)
+        imsave(os.path.join(pred_dir, str(i) + '_pred.png'), image)
+        i+=1
 
 
 #model.fit(x_train, y_train, batch_size = sizeOfBatch, epochs = numberOfEpochs)
