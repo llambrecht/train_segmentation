@@ -40,7 +40,7 @@ imgt.show()
 imgg.show()"""
 
 
-"""
+
 imgs_train = preprocess(imgs_train)
 
 
@@ -68,4 +68,3 @@ print('-'*30)
 model.fit(imgs_train, imgs_mask_train, batch_size=32, nb_epoch=numberOfEpochs, verbose=1, shuffle=True,
           validation_split=0.2,
           callbacks=[model_checkpoint])
-"""
