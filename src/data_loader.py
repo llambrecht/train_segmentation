@@ -13,8 +13,9 @@ patch_gt_test = "../DRIVE_datasets_training_testing/test/patchs_gt/"
 
 
 def DataCreator():
-    images = os.listdir(patch_nu_path)
+    images = sorted(os.listdir(patch_nu_path))
     total = len(images)
+
 
 
     imgs = np.ndarray((total,48,48), dtype=np.uint8)
@@ -31,7 +32,8 @@ def DataCreator():
 
     #ground truth
     i = 0
-    images = os.listdir(patch_gt_path)
+    images = sorted(os.listdir(patch_gt_path))
+
     total = len(images)
     for image_name in images:
         img = Image.open(os.path.join(patch_gt_path, image_name))
@@ -62,6 +64,7 @@ def DataCreator():
         arrayImgTestGt = np.asarray(imgtestGT)
         imgstest_gt[i] = arrayImgTestGt
         i+=1
+
 
     #save train data
     np.save('../imgs_train.npy', imgs)
