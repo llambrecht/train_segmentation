@@ -11,6 +11,8 @@ from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 import random
 
+from skimage.util.shape import view_as_blocks
+
 
 from PIL import Image, ImageOps
 
@@ -21,11 +23,11 @@ nbImg = 20
 height = 584
 width = 565
 taillePatchs = 48
-nbPatchs = 50
+nbPatchs = 10
 nbPatchsPerImage = 0
 channels = 3
 
-nbPatchsTest = 5
+nbPatchsTrain = 20
 
 usage = "Usage : ./patch_making [nbPatchs]"
 
@@ -139,11 +141,8 @@ for path, subdirs, files in os.walk(nu_imgs_train_path):
 			rotOriginal = rotate(arrayOriginal, rd)
 			rotGt = rotate(arrayGroundTruth, rd)
 
-			open(rotated_original_path + "rotOriginal" + str(i) +"_rot"+str(j) + ".tif", 'a').close()
-			scipy.misc.imsave(rotated_original_path + "rotOriginal" + str(i) +"_rot"+str(j) + ".tif", rotOriginal)
-
-			open(rotated_gt_path + "rotGt" + str(i) +"_rot"+str(j) + ".gif", 'a').close()
-			scipy.misc.imsave(rotated_gt_path + "rotGt" + str(i) +"_rot"+str(j) + ".gif", rotGt)
+			scipy.misc.imsave(rotated_original_path + "rot" + str(i) +"_rot"+str(j) + "_original" + ".tif", rotOriginal)
+			scipy.misc.imsave(rotated_gt_path + "rot" + str(i) +"_rot"+str(j) + "_gt" + ".gif", rotGt)
 
 #--------- Création des patchs et enregistrement
 
@@ -156,21 +155,20 @@ for path, subdirs, files in os.walk(rotated_nu_path):
 		imgGris = ImageOps.grayscale(imgOriginal)
 
 		arrayOriginal = np.asarray(imgGris)
-		patches = image.extract_patches_2d(arrayOriginal, (48,48), 5)
+
+		gtName = files[i].replace("original","gt")
+		gtName = gtName.replace(".tif",".gif")
+		imgGt = Image.open(rotated_gt_path + gtName)
+		arrayGt = np.asarray(imgGt)
+		patchesGt = image.extract_patches_2d(arrayGt,(48,48),20,1)
+		patches = image.extract_patches_2d(arrayOriginal, (48,48), 20,1)
+
+
+
 		#mise en niveau de gris
 		for j in range(len(patches)):
-			open(patch_nu_path + "patch_nu_" +str(i) + "_" + str(j) + ".tif", 'a').close()
 			scipy.misc.imsave(patch_nu_path + "patch_nu_" +str(i) + "_" + str(j) + ".tif", patches[j])
-
-#patch des ground truth
-for path,subdirs,files in os.walk(rotated_gt_path):
-	for i in range(len(files)):
-		imgGt = Image.open(rotated_gt_path + files[i])
-		arrayGt = np.asarray(imgGt)
-		patches = image.extract_patches_2d(arrayGt , (48,48), 5)
-		for j in range(len(patches)):
-			open(patch_gt_path + "patch_gt_" + str(i) + "_" + str(j) + ".gif", 'a').close()
-			scipy.misc.imsave(patch_gt_path + "patch_gt_" + str(i) + "_" + str(j) + ".gif", patches[j])
+			scipy.misc.imsave(patch_gt_path + "patch_gt_" + str(i) + "_" + str(j) + ".gif", patchesGt[j])
 
 
 #--------- fin rotation des images et enregistrement
@@ -187,13 +185,19 @@ for path, subdirs, files in os.walk(nu_imgs_test_path):
 
 		arrayOriginal = np.asarray(imgGris)
 
-		patches = image.extract_patches_2d(arrayOriginal,(48,48),5)
+		gtName = files[i][0:2] + "_manual1.gif"
+		imgGt = Image.open(GT_imgs_test_path + gtName)
+		arrayGt = np.asarray(imgGt)
+
+		patchesGt = image.extract_patches_2d(arrayGt,(48,48),5,1)
+		patches = image.extract_patches_2d(arrayOriginal,(48,48),5,1)
 
 		for j in range(len(patches)):
 			scipy.misc.imsave(patch_nu_path_test + "patch_nu_" + str(i) +"_"+str(j) +".tif" , patches[j])
+			scipy.misc.imsave(patch_gt_path_test + "patch_gt_" + str(i) +"_"+str(j) +".gif" , patchesGt[j])
 
 
-
+'''
 for path, subdirs, files in os.walk(GT_imgs_test_path):
 	for i in range(len(files)):
 		imgGt = Image.open(GT_imgs_test_path + files[i])
@@ -202,7 +206,7 @@ for path, subdirs, files in os.walk(GT_imgs_test_path):
 		for j in range(len(patches)):
 			open(patch_gt_path_test	+ "patch_gt_" + str(i) + "_" + str(j) + ".gif", 'a').close()
 			scipy.misc.imsave(patch_gt_path_test + "patch_gt_" + str(i) +"_"+ str(j) + ".gif", patches[j])
-
+'''
 """
 imageName = "01_test.tif"
 im = Image.open(nu_imgs_test_path + imageName)
