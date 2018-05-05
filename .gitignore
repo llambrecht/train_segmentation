@@ -5,3 +5,4 @@ src/weights.h5
 *.npy
 preds
 data_loader.pyc
+src/*.pyc
