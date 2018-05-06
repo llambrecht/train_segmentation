@@ -16,6 +16,8 @@ from skimage.util.shape import view_as_blocks
 
 from PIL import Image, ImageOps
 
+from pre_proc import *
+
 
 #--------- Macros
 
@@ -124,11 +126,12 @@ for path, subdirs, files in os.walk(nu_imgs_train_path):
 		#print "original image : " + files[i]
 		#on met l'image originale dans un array
 		imgOriginal = Image.open(nu_imgs_train_path + files[i])
-		arrayOriginal = np.asarray(imgOriginal)
+		arrayGrey = ImageOps.grayscale(imgOriginal)
+		arrayOriginal = np.asarray(arrayGrey)
 
 		#on met la gt correspondante dans un array
 		gtName = files[i][0:2] + "_manual1.gif"
-		borderName = files[i][0:2] + "_training_mask.gif"
+
 		#print gtName
 		gt = Image.open(GT_imgs_train_path + gtName)
 		arrayGroundTruth = np.asarray(gt)
@@ -136,6 +139,7 @@ for path, subdirs, files in os.walk(nu_imgs_train_path):
 
 
 		#on prend le masque correspondant
+		borderName = files[i][0:2] + "_training_mask.gif"
 		border = Image.open(border_img_train + borderName)
 		borderArray = np.asarray(border)
 
@@ -170,12 +174,10 @@ for path, subdirs, files in os.walk(rotated_nu_path):
 
 		imgGt = Image.open(rotated_gt_path + gtName)
 		arrayGt = np.asarray(imgGt)
-		patchesGt = image.extract_patches_2d(arrayGt,(48,48),200,1)
-		patches = image.extract_patches_2d(arrayOriginal, (48,48), 200,1)
+		patchesGt = image.extract_patches_2d(arrayGt,(48,48),300,1)
+		patches = image.extract_patches_2d(arrayOriginal, (48,48), 300,1)
 
 
-
-		#mise en niveau de gris
 		for j in range(len(patches)):
 			scipy.misc.imsave(patch_nu_path + "patch_nu_" +str(i) + "_" + str(j) + ".tif", patches[j])
 			scipy.misc.imsave(patch_gt_path + "patch_gt_" + str(i) + "_" + str(j) + ".gif", patchesGt[j])
