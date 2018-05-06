@@ -37,13 +37,13 @@ usage = "Usage : ./patch_making [nbPatchs]"
 
 nu_imgs_train_path = "../DRIVE/training/images/"
 GT_imgs_train_path = "../DRIVE/training/1st_manual/"
-mask_img_train = "../DRIVE/training/mask/"
+border_img_train = "../DRIVE/training/mask/"
 
 #test
 
 nu_imgs_test_path = "../DRIVE/test/images/"
 GT_imgs_test_path = "../DRIVE/test/1st_manual/"
-mask_img_test = "../DRIVE/test/mask/"
+border_img_test = "../DRIVE/test/mask/"
 
 #created sets
 dataset_path = "../DRIVE_datasets_training_testing/"
@@ -53,6 +53,7 @@ rotated_gt_path = dataset_path + "/train/rotated_gt/"
 #rotated image paths train
 rotated_nu_path = "../DRIVE_datasets_training_testing/train/rotated_original/"
 rotated_gt_path = "../DRIVE_datasets_training_testing/train/rotated_gt/"
+rotated_border_path = "../DRIVE_datasets_training_testing/train/rotated_border/"
 patch_nu_path = "../DRIVE_datasets_training_testing/train/patchs_original/"
 patch_gt_path = "../DRIVE_datasets_training_testing/train/patchs_gt/"
 
@@ -79,7 +80,8 @@ if not os.path.exists(patch_nu_path_test):
 if not os.path.exists(patch_gt_path_test):
 	os.makedirs(patch_gt_path_test)
 
-
+if not os.path.exists(rotated_border_path):
+	os.makedirs(rotated_border_path)
 
 #--------- fin Paths
 
@@ -126,11 +128,16 @@ for path, subdirs, files in os.walk(nu_imgs_train_path):
 
 		#on met la gt correspondante dans un array
 		gtName = files[i][0:2] + "_manual1.gif"
+		borderName = files[i][0:2] + "_training_mask.gif"
 		#print gtName
 		gt = Image.open(GT_imgs_train_path + gtName)
 		arrayGroundTruth = np.asarray(gt)
 
-		#on prend le masque correspondant ( à faire )
+
+
+		#on prend le masque correspondant
+		border = Image.open(border_img_train + borderName)
+		borderArray = np.asarray(border)
 
 		#rotation
 		j = 0
@@ -140,9 +147,11 @@ for path, subdirs, files in os.walk(nu_imgs_train_path):
 			rd = 1 + random.random() * 98
 			rotOriginal = rotate(arrayOriginal, rd)
 			rotGt = rotate(arrayGroundTruth, rd)
+			rotBorder = rotate(borderArray, rd)
 
 			scipy.misc.imsave(rotated_original_path + "rot" + str(i) +"_rot"+str(j) + "_original" + ".tif", rotOriginal)
 			scipy.misc.imsave(rotated_gt_path + "rot" + str(i) +"_rot"+str(j) + "_gt" + ".gif", rotGt)
+			scipy.misc.imsave(rotated_border_path + "rot" + str(i) +"_rot"+str(j) + "_border" + ".gif", rotBorder)
 
 #--------- Création des patchs et enregistrement
 
