@@ -27,6 +27,9 @@ def DataCreator():
     for image_name in images:
         img = Image.open(os.path.join(patch_nu_path, image_name))
         arrayImg = np.asarray(img)
+        '''if i == 6 :
+            np.set_printoptions(threshold=np.nan)
+            print arrayImg'''
         imgs[i] = arrayImg
         i += 1
 
@@ -38,11 +41,14 @@ def DataCreator():
     for image_name in images:
         img = Image.open(os.path.join(patch_gt_path, image_name))
         arrayImg = np.asarray(img)
+        '''if i == 6 :
+            np.set_printoptions(threshold=np.nan)
+            print arrayImg'''
         imgs_gt[i] = arrayImg
         i += 1
 
     #test data
-    imagestest = os.listdir(patch_nu_test)
+    imagestest = sorted(os.listdir(patch_nu_test))
     totaltest = len(imagestest)
 
     imgstest = np.ndarray((totaltest, 48,48), dtype=np.uint8)
@@ -57,7 +63,7 @@ def DataCreator():
         i += 1
 
     #ground truth test
-    imagestest = os.listdir(patch_gt_test)
+    imagestest = sorted(os.listdir(patch_gt_test))
     i=0
     for image_name in imagestest:
         imgtestGT = Image.open(os.path.join(patch_gt_test, image_name))
@@ -74,7 +80,7 @@ def DataCreator():
     #save test data
     np.save('../imgs_test.npy', imgstest)
     np.save('../imgs_gt_test.npy', imgstest_gt)
-    print('Saved train data to .npy files')
+    print('Saved test data to .npy files')
 
 def DataLoader():
     imgs_train = np.load('../imgs_train.npy')

@@ -1,10 +1,11 @@
 import keras
 import os, sys
 from keras.models import Sequential, Model
-from keras.layers import Dense, Activation, Conv2D, MaxPooling2D, Flatten, Dropout
+from keras.layers import Dense, Activation, Conv2D, MaxPooling2D, Flatten, Dropout, UpSampling2D, Input, core
 from keras.optimizers import SGD, Adam
 from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, Conv2DTranspose
 from keras.callbacks import ModelCheckpoint
+
 
 from PIL import Image
 
@@ -44,7 +45,10 @@ def dice_coef(y_true, y_pred):
 def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
 
+def binary_accuracy(y_true, y_pred):
+    return K.mean(K.equal(y_true, K.round(y_pred)), axis=-1)
 
+'''
 def get_unet():
     inputs = Input((img_rows, img_cols, 1))
     conv1 = Conv2D(32, (3, 3), activation='relu', padding='same')(inputs)
@@ -86,17 +90,62 @@ def get_unet():
 
     model = Model(inputs=[inputs], outputs=[conv10])
 
-    model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=[dice_coef])
+    model.compile(optimizer='sgd', loss='mean_squared_error',  metrics=['acc'])
+    return model
+'''
+
+def get_unet(n_ch,patch_height,patch_width):
+    inputs = Input(shape=(n_ch,patch_height,patch_width))
+    conv1 = Conv2D(32, (3, 3), activation='relu', padding='same',data_format='channels_first')(inputs)
+    conv1 = Dropout(0.2)(conv1)
+    conv1 = Conv2D(32, (3, 3), activation='relu', padding='same',data_format='channels_first')(conv1)
+    pool1 = MaxPooling2D((2, 2))(conv1)
+    #
+    conv2 = Conv2D(64, (3, 3), activation='relu', padding='same',data_format='channels_first')(pool1)
+    conv2 = Dropout(0.2)(conv2)
+    conv2 = Conv2D(64, (3, 3), activation='relu', padding='same',data_format='channels_first')(conv2)
+    pool2 = MaxPooling2D((2, 2))(conv2)
+    #
+    conv3 = Conv2D(128, (3, 3), activation='relu', padding='same',data_format='channels_first')(pool2)
+    conv3 = Dropout(0.2)(conv3)
+    conv3 = Conv2D(128, (3, 3), activation='relu', padding='same',data_format='channels_first')(conv3)
+
+    up1 = UpSampling2D(size=(2, 2))(conv3)
+    up1 = concatenate([conv2,up1],axis=1)
+    conv4 = Conv2D(64, (3, 3), activation='relu', padding='same',data_format='channels_first')(up1)
+    conv4 = Dropout(0.2)(conv4)
+    conv4 = Conv2D(64, (3, 3), activation='relu', padding='same',data_format='channels_first')(conv4)
+    #
+    up2 = UpSampling2D(size=(2, 2))(conv4)
+    up2 = concatenate([conv1,up2], axis=1)
+    conv5 = Conv2D(32, (3, 3), activation='relu', padding='same',data_format='channels_first')(up2)
+    conv5 = Dropout(0.2)(conv5)
+    conv5 = Conv2D(32, (3, 3), activation='relu', padding='same',data_format='channels_first')(conv5)
+    #
+    conv6 = Conv2D(2, (1, 1), activation='relu',padding='same',data_format='channels_first')(conv5)
+    conv6 = core.Reshape((2,patch_height*patch_width))(conv6)
+    conv6 = core.Permute((2,1))(conv6)
+    ############
+    conv7 = core.Activation('softmax')(conv6)
+
+    model = Model(inputs=inputs, outputs=conv7)
+
+    # sgd = SGD(lr=0.01, decay=1e-6, momentum=0.3, nesterov=False)
+    model.compile(optimizer='sgd', loss='categorical_crossentropy',metrics=['accuracy'])
 
     return model
+
+
 
 def preprocess(imgs):
     imgs_p = np.ndarray((imgs.shape[0], img_rows, img_cols), dtype=np.uint8)
     for i in range(imgs.shape[0]):
         imgs_p[i] = resize(imgs[i], (img_cols, img_rows), preserve_range=True)
 
-    imgs_p = imgs_p[..., np.newaxis]
+    imgs_p = imgs_p[np.newaxis,...]
     return imgs_p
+
+
 
 def train_and_predict():
     DataCreator()
@@ -112,8 +161,8 @@ def train_and_predict():
     mean = np.mean(imgs_train)  # mean for data centering
     std = np.std(imgs_train)  # std for data normalization
 
-    imgs_train -= mean
-    imgs_train /= std
+    #imgs_train -= mean
+    #imgs_train /= std
 
     imgs_mask_train = imgs_mask_train.astype('float32')
     imgs_mask_train /= 255.  # scale masks to [0, 1]
@@ -139,7 +188,7 @@ def train_and_predict():
     imgs_test = preprocess(imgs_test)
 
     imgs_test = imgs_test.astype('float32')
-    imgs_test -= mean
+#    imgs_test -= mean
     imgs_test /= std
 
     print('-'*30)
