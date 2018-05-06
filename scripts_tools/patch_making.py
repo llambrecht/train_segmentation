@@ -158,10 +158,11 @@ for path, subdirs, files in os.walk(rotated_nu_path):
 
 		gtName = files[i].replace("original","gt")
 		gtName = gtName.replace(".tif",".gif")
+
 		imgGt = Image.open(rotated_gt_path + gtName)
 		arrayGt = np.asarray(imgGt)
-		patchesGt = image.extract_patches_2d(arrayGt,(48,48),20,1)
-		patches = image.extract_patches_2d(arrayOriginal, (48,48), 20,1)
+		patchesGt = image.extract_patches_2d(arrayGt,(48,48),200,1)
+		patches = image.extract_patches_2d(arrayOriginal, (48,48), 200,1)
 
 
 
