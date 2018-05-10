@@ -10,6 +10,7 @@ from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint
 from keras import backend as K
 from PIL import Image
+from keras.utils import plot_model
 
 from keras import metrics
 
